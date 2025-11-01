@@ -574,6 +574,29 @@
                     </div>
                 </div>
 
+                <!-- SECTION 8: TEAM ATTENDANCE -->
+                <div style="background: #d1ecf1; border: 2px solid #17a2b8; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #0c5460; margin-top: 0; font-size: 13pt; border-bottom: 2px solid #17a2b8; padding-bottom: 10px;">👥 8. TEAM ATTENDANCE</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 9pt;">Primary RN:</label>
+                            <input type="text" id="rr-primary-rn" placeholder="Name of primary nurse" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px; font-size: 9pt;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 9pt;">ICU RNs:</label>
+                            <input type="text" id="rr-icu-rns" placeholder="Names of ICU nurses" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px; font-size: 9pt;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 9pt;">Residents:</label>
+                            <input type="text" id="rr-residents" placeholder="Names of residents" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px; font-size: 9pt;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 9pt;">Attendings:</label>
+                            <input type="text" id="rr-attendings" placeholder="Names of attending physicians" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px; font-size: 9pt;">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ACTION BUTTONS -->
                 <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
                     <button type="button" onclick="generateDifferential()" style="background: #27ae60; color: white; border: none; padding: 18px 50px; font-size: 14pt; font-weight: bold; border-radius: 8px; cursor: pointer; margin-right: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
@@ -596,11 +619,8 @@
                         <button onclick="printAssessment()" style="background: #16a085; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer; margin-right: 10px;">
                             🖨️ Print
                         </button>
-                        <button onclick="copyNote()" style="background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer; margin-right: 10px;">
+                        <button onclick="copyNote()" style="background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer;">
                             📋 Copy Note
-                        </button>
-                        <button onclick="copyForGlass()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer;">
-                            🤖 Copy for Glass AI
                         </button>
                     </div>
                 </div>
@@ -633,6 +653,7 @@
         }
         
         function generateDifferential() {
+            console.log("=== generateDifferential() called ===");
             // SECTION 1: Identification & Context
             const patientData = {
                 name: document.getElementById('rr-name').value,
@@ -708,64 +729,18 @@
             const disposition = document.getElementById('rr-disposition').value;
             const teamComm = document.getElementById('rr-team-comm').value;
             
-            // DIFFERENTIAL DIAGNOSIS SCORING
-            const scores = {};
-            const allFindings = [...airway, ...breathing, ...circulation, ...neuro, ...exposure];
+            // Team Attendance
+            const attendance = {
+                primaryRN: document.getElementById('rr-primary-rn').value,
+                icuRNs: document.getElementById('rr-icu-rns').value,
+                residents: document.getElementById('rr-residents').value,
+                attendings: document.getElementById('rr-attendings').value
+            };
             
-            for (const [key, condition] of Object.entries(differentialDB)) {
-                let score = 0;
-                
-                // Score based on activation reason if it matches triggers
-                if (condition.triggers && patientData.activationReason) {
-                    const reasonKey = patientData.activationReason.toLowerCase().replace(/ /g, '-');
-                    if (condition.triggers[reasonKey]) score += condition.triggers[reasonKey];
-                }
-                
-                // Vital signs scoring
-                if (condition.vitals && vitals) {
-                    if (vitals.hr) {
-                        if (condition.vitals.hr?.high && vitals.hr > 100) score += condition.vitals.hr.high;
-                        if (condition.vitals.hr?.low && vitals.hr < 60) score += condition.vitals.hr.low;
-                    }
-                    if (vitals.sbp) {
-                        if (condition.vitals.sbp?.low && vitals.sbp < 90) score += condition.vitals.sbp.low;
-                        if (condition.vitals.sbp?.veryHigh && vitals.sbp > 180) score += condition.vitals.sbp.veryHigh;
-                    }
-                    if (vitals.rr && condition.vitals.rr?.high && vitals.rr > 20) score += condition.vitals.rr.high;
-                    if (vitals.spo2 && condition.vitals.spo2?.low && vitals.spo2 < 92) score += condition.vitals.spo2.low;
-                    if (vitals.temp) {
-                        if (condition.vitals.temp?.high && vitals.temp > 100.4) score += condition.vitals.temp.high;
-                        if (condition.vitals.temp?.low && vitals.temp < 96) score += condition.vitals.temp.low;
-                    }
-                    if (disability.gcs && condition.vitals.gcs?.low && disability.gcs < 13) score += condition.vitals.gcs.low;
-                }
-                
-                // PMH scoring
-                if (condition.pmh) {
-                    pmh.forEach(p => {
-                        if (condition.pmh[p]) score += condition.pmh[p];
-                    });
-                }
-                
-                // Exam findings scoring
-                if (condition.exam) {
-                    allFindings.forEach(finding => {
-                        if (condition.exam[finding]) score += condition.exam[finding];
-                    });
-                }
-                
-                if (score > 0) {
-                    scores[key] = {
-                        name: condition.name,
-                        link: condition.link,
-                        score: score
-                    };
-                }
-            }
-            
-            const sortedDiff = Object.entries(scores).sort((a, b) => b[1].score - a[1].score).slice(0, 10);
             const timestamp = new Date().toLocaleString();
             
+            console.log("=== Starting output generation ===");
+            console.log("Patient data:", patientData);
             // GENERATE COMPREHENSIVE OUTPUT
             let output = `<div style="font-family: 'Courier New', monospace;">`;
             output += `<strong style="font-size: 12pt;">═══════════════════════════════════════════════════════════════════</strong>\n`;
@@ -870,20 +845,6 @@
             if (response) output += `<strong>Response to Interventions:</strong> ${response}\n`;
             output += `\n`;
             
-            // DIFFERENTIAL DIAGNOSIS
-            output += `<strong style="color: #e74c3c; font-size: 11pt;">🔍 RANKED DIFFERENTIAL DIAGNOSIS</strong>\n`;
-            output += `${'═'.repeat(70)}\n`;
-            if (sortedDiff.length > 0) {
-                sortedDiff.forEach((item, idx) => {
-                    const likelihood = item[1].score > 20 ? 'HIGH' : item[1].score > 10 ? 'MODERATE' : 'POSSIBLE';
-                    const color = item[1].score > 20 ? '#e74c3c' : item[1].score > 10 ? '#f39c12' : '#95a5a6';
-                    output += `  ${idx + 1}. <a href="${item[1].link}" style="color: #0366d6; text-decoration: none; font-weight: 600;">${item[1].name}</a>`;
-                    output += ` <span style="color: ${color}; font-weight: bold;">[${likelihood} - Score: ${item[1].score}]</span>\n`;
-                });
-            } else {
-                output += `  <span style="color: #e74c3c;">⚠ Unable to generate differential - please enter more clinical data</span>\n`;
-            }
-            output += `\n`;
             
             // CRITICAL ACTIONS
             output += `<strong style="color: #e74c3c; font-size: 11pt;">🚨 IMMEDIATE CRITICAL ACTIONS</strong>\n`;
@@ -950,6 +911,15 @@
             if (teamComm) output += `<strong>Team Communication:</strong>\n${teamComm}\n`;
             output += `\n`;
             
+            // TEAM ATTENDANCE
+            output += `<strong style="color: #17a2b8;">👥 TEAM ATTENDANCE</strong>\n`;
+            output += `${'─'.repeat(70)}\n`;
+            if (attendance.primaryRN) output += `<strong>Primary RN:</strong> ${attendance.primaryRN}\n`;
+            if (attendance.icuRNs) output += `<strong>ICU RNs:</strong> ${attendance.icuRNs}\n`;
+            if (attendance.residents) output += `<strong>Residents:</strong> ${attendance.residents}\n`;
+            if (attendance.attendings) output += `<strong>Attendings:</strong> ${attendance.attendings}\n`;
+            output += `\n`;
+            
             // ADDITIONAL NOTES
             if (notes) {
                 output += `<strong>📝 ADDITIONAL CLINICAL NOTES</strong>\n`;
@@ -961,9 +931,36 @@
             output += `<em style="color: #666; font-size: 8pt;">This assessment is a clinical decision support tool. Always use clinical judgment.\nReview and verify all data. Update assessment as patient condition changes.</em>\n`;
             output += `</div>`;
             
+            console.log("=== Output generated, length:", output.length);
+            console.log("=== Attempting to display results ===");
+            
+            const outputElement = document.getElementById('rr-output');
+            const resultsElement = document.getElementById('rr-results');
+            
+            console.log("Output element:", outputElement);
+            console.log("Results element:", resultsElement);
+            
+            if (!outputElement) {
+                console.error("ERROR: rr-output element not found!");
+                alert("Error: Cannot find output element");
+                return;
+            }
+            
+            if (!resultsElement) {
+                console.error("ERROR: rr-results element not found!");
+                alert("Error: Cannot find results element");
+                return;
+            }
+            
             document.getElementById('rr-output').innerHTML = output;
             document.getElementById('rr-results').style.display = 'block';
+            console.log("=== Results displayed, scrolling into view ===");
             document.getElementById('rr-results').scrollIntoView({ behavior: 'smooth' });
+            
+            // Automatically copy for Glass Health AI
+            copyForGlass();
+            
+            console.log("=== generateDifferential() complete ===");
         }
         
         function saveRapidResponse() {

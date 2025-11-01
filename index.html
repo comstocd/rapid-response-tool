@@ -1068,11 +1068,13 @@
 
 CLINICAL QUESTION FOR GLASS HEALTH AI:
 Based on this rapid response assessment, please provide:
-1. Comprehensive differential diagnosis ranked by likelihood
-2. Recommended diagnostic workup and tests
-3. Evidence-based treatment recommendations
-4. Disposition recommendations (floor vs step-down vs ICU)
-5. Key clinical pearls and red flags to monitor`;
+1. Priority diagnostic tests, imaging, and immediate interventions needed now
+2. Escalation criteria - specific parameters requiring ICU transfer or higher level of care
+3. Comprehensive differential diagnosis ranked by likelihood
+4. Evidence-based treatment recommendations with specific dosing
+5. Key clinical pearls and red flags to monitor closely
+
+IMPORTANT: Do NOT include citations, references, or bibliography. Provide only direct clinical recommendations without any reference numbers or citations.`;
 
         navigator.clipboard.writeText(glassPrompt).then(() => {
             document.getElementById('glass-section').style.display = 'block';

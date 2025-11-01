@@ -147,22 +147,23 @@
             border-radius: 4px;
         }
         
-
-        
-        body {
-            background: #1a202c;
-            padding: 0;
-            margin: 0;
-        }
+        body { background: #1a202c; padding: 12px; }
     </style>
 </head>
 <body>
-    <div id="rr-modal" style="  top: 0; left: 0; width: 100%; height: 100%; background: #1a202c;  overflow-y: auto;">
-        <div style="background: white; max-width: 1600px; margin: 20px auto; border-radius: 12px; padding: 30px; position: relative;">
-            <button  style="position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; z-index: 10;">✕ Close</button>
+    <div id="rr-modal" style="position: relative; width: 100%; min-height: 100vh; background: #1a202c; overflow-y: auto; padding: 20px;">
+        <div style="background: white; max-width: 1600px; margin: 0 auto; border-radius: 12px; padding: 30px; position: relative;">
             
             <h2 style="color: #e74c3c; margin-top: 0;">🚨 COMPREHENSIVE RAPID RESPONSE ASSESSMENT</h2>
             <p style="color: #666; font-size: 10pt;">Complete systematic evaluation following rapid response protocols</p>
+            <div style="margin-bottom: 20px;">
+                <button onclick="viewSavedResponses()" style="background: #3498db; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer;">
+                    📋 View Saved Assessments
+                </button>
+                <button onclick="clearRRForm()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer; margin-left: 10px;">
+                    🗑️ Clear Form
+                </button>
+            </div>
             
             <form id="rr-form">
                 
@@ -585,7 +586,7 @@
             </form>
             
             <!-- RESULTS SECTION -->
-            <div id="rr-results" style=" margin-top: 30px; padding-top: 30px; border-top: 4px solid #e74c3c;">
+            <div id="rr-results" style="display: none; margin-top: 30px; padding-top: 30px; border-top: 4px solid #e74c3c;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #e74c3c; margin: 0;">📊 COMPREHENSIVE RAPID RESPONSE ASSESSMENT</h2>
                     <div>
@@ -595,11 +596,8 @@
                         <button onclick="printAssessment()" style="background: #16a085; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer; margin-right: 10px;">
                             🖨️ Print
                         </button>
-                        <button onclick="copyNote()" style="background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer; margin-right: 10px;">
+                        <button onclick="copyNote()" style="background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer;">
                             📋 Copy Note
-                        </button>
-                        <button onclick="copyForGlass()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; font-size: 11pt; font-weight: bold; border-radius: 6px; cursor: pointer;">
-                            🤖 Copy for Glass AI
                         </button>
                     </div>
                 </div>
@@ -612,7 +610,7 @@
     </div>
 
     <!-- SAVED RESPONSES MODAL -->
-    <div id="saved-modal" style="  top: 0; left: 0; width: 100%; height: 100%; background: #1a202c;  overflow-y: auto;">
+    <div id="saved-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; overflow-y: auto;">
         <div style="background: white; max-width: 1200px; margin: 20px auto; border-radius: 12px; padding: 30px; position: relative;">
             <button onclick="closeSavedResponses()" style="position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">✕ Close</button>
             
@@ -622,8 +620,6 @@
             </div>
         </div>
     </div>
-    
-
 
 <script>
         function clearRRForm() {
@@ -1042,23 +1038,7 @@
             printWindow.document.write('<style>body { font-family: "Courier New", monospace; font-size: 10pt; padding: 20px; }</style>');
             printWindow.document.write('</head><body>');
             printWindow.document.write(content);
-            printWindow.document.write('
-    
-    <!-- GLASS HEALTH SECTION -->
-    <div id="glass-section" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; margin: 20px auto; max-width: 1560px;">
-        <h3 style="color: white; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; margin-bottom: 15px;">🤖 Glass Health AI - Differential Diagnosis</h3>
-        <p style="font-size: 11pt; margin-bottom: 15px;"><strong>Clinical summary copied to clipboard!</strong></p>
-        <p style="font-size: 10pt; line-height: 1.6;">Now click below to open Glass Health in a new tab, then paste the copied summary. Glass AI will generate an evidence-based differential diagnosis with assessment and plan recommendations.</p>
-        <div style="margin-top: 15px;">
-            <a href="https://glass.health" target="_blank" style="background: white; color: #667eea; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block; margin-right: 10px;">
-                Open Glass Health AI →
-            </a>
-            <button onclick="copyForGlass()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer;">
-                📋 Copy Again
-            </button>
-        </div>
-    </div>
-</body></html>');
+            printWindow.document.write('</body></html>');
             printWindow.document.close();
             printWindow.print();
         }
@@ -1080,18 +1060,17 @@
             });
         }
     
-
     function copyForGlass() {
-        // Build Glass Health-formatted summary from the generated assessment
-        const outputText = document.getElementById('rr-output').innerText;
+        const outputText = document.getElementById('rr-output').innerHTML;
+        const textOnly = outputText.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
         
-        const glassPrompt = `${outputText}
+        const glassPrompt = textOnly + `
 
 CLINICAL QUESTION FOR GLASS HEALTH AI:
 Based on this rapid response assessment, please provide:
 1. Comprehensive differential diagnosis ranked by likelihood
 2. Recommended diagnostic workup and tests
-3. Evidence-based treatment recommendations  
+3. Evidence-based treatment recommendations
 4. Disposition recommendations (floor vs step-down vs ICU)
 5. Key clinical pearls and red flags to monitor`;
 
@@ -1106,60 +1085,22 @@ Based on this rapid response assessment, please provide:
             document.execCommand('copy');
             document.body.removeChild(textarea);
             document.getElementById('glass-section').style.display = 'block';
-            document.getElementById('glass-section').scrollIntoView({ behavior: 'smooth' });
-        });
-    }
-</script>
-    
-    
-    <!-- COMPREHENSIVE RAPID RESPONSE TOOL MODAL -->
-
-
-
-    function copyForGlass() {
-        // Build Glass Health-formatted summary from the generated assessment
-        const outputText = document.getElementById('rr-output').innerText;
-        
-        const glassPrompt = `${outputText}
-
-CLINICAL QUESTION FOR GLASS HEALTH AI:
-Based on this rapid response assessment, please provide:
-1. Comprehensive differential diagnosis ranked by likelihood
-2. Recommended diagnostic workup and tests
-3. Evidence-based treatment recommendations  
-4. Disposition recommendations (floor vs step-down vs ICU)
-5. Key clinical pearls and red flags to monitor`;
-
-        navigator.clipboard.writeText(glassPrompt).then(() => {
-            document.getElementById('glass-section').style.display = 'block';
-            document.getElementById('glass-section').scrollIntoView({ behavior: 'smooth' });
-        }).catch(err => {
-            const textarea = document.createElement('textarea');
-            textarea.value = glassPrompt;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            document.getElementById('glass-section').style.display = 'block';
-            document.getElementById('glass-section').scrollIntoView({ behavior: 'smooth' });
         });
     }
 </script>
 
-    
-    <!-- GLASS HEALTH SECTION -->
-    <div id="glass-section" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; margin: 20px auto; max-width: 1560px;">
-        <h3 style="color: white; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; margin-bottom: 15px;">🤖 Glass Health AI - Differential Diagnosis</h3>
-        <p style="font-size: 11pt; margin-bottom: 15px;"><strong>Clinical summary copied to clipboard!</strong></p>
-        <p style="font-size: 10pt; line-height: 1.6;">Now click below to open Glass Health in a new tab, then paste the copied summary. Glass AI will generate an evidence-based differential diagnosis with assessment and plan recommendations.</p>
-        <div style="margin-top: 15px;">
-            <a href="https://glass.health" target="_blank" style="background: white; color: #667eea; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block; margin-right: 10px;">
-                Open Glass Health AI →
-            </a>
-            <button onclick="copyForGlass()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer;">
-                📋 Copy Again
-            </button>
-        </div>
+<div id="glass-section" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; margin: 20px; max-width: 1560px; margin-left: auto; margin-right: auto;">
+    <h3 style="color: white; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; margin-bottom: 15px;">🤖 Glass Health AI - Differential Diagnosis</h3>
+    <p style="font-size: 11pt; margin-bottom: 15px;"><strong>Clinical summary copied!</strong></p>
+    <p style="font-size: 10pt; line-height: 1.6;">Click below to open Glass Health, then paste the summary. Glass AI will generate an evidence-based differential diagnosis with assessment and plan.</p>
+    <div style="margin-top: 15px;">
+        <a href="https://glass.health" target="_blank" style="background: white; color: #667eea; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block; margin-right: 10px;">
+            Open Glass Health AI →
+        </a>
+        <button onclick="copyForGlass()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+            📋 Copy Again
+        </button>
     </div>
+</div>
 </body>
 </html>
